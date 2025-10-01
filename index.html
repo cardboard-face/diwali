@@ -503,81 +503,85 @@
       // Add fireworks animation
       createFireworks();
     });
-    
     async function generateGreeting() {
-      const name = document.getElementById('name').value.trim();
-      const relationship = document.getElementById('relationship').value;
-      const customDetails = document.getElementById('custom-details').value.trim();
-      const selectedStyle = document.querySelector('.option-card.selected').dataset.style;
-      
-      const output = document.getElementById('output');
-      const spinner = document.getElementById('spinner');
-      const actionButtons = document.getElementById('action-buttons');
-      
-      if (!name) {
-        output.innerHTML = '<p style="color: #ffeb3b;">Please enter a name for the recipient!</p>';
-        return;
-      }
-      
-      spinner.style.display = 'block';
-      output.innerHTML = '';
-      actionButtons.style.display = 'none';
-      
-      try {
-        // Call our serverless function instead of direct API
-        const response = await fetch('/api/generate-greeting', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name,
-            relationship,
-            customDetails,
-            selectedStyle
-          })
-        });
+  const name = document.getElementById('name').value.trim();
+  const relationship = document.getElementById('relationship').value;
+  const customDetails = document.getElementById('custom-details').value.trim();
+  const selectedStyle = document.querySelector('.option-card.selected').dataset.style;
+  
+  const output = document.getElementById('output');
+  const spinner = document.getElementById('spinner');
+  const actionButtons = document.getElementById('action-buttons');
+  
+  if (!name) {
+    output.innerHTML = '<p style="color: #ffeb3b;">Please enter a name for the recipient!</p>';
+    return;
+  }
+  
+  spinner.style.display = 'block';
+  output.innerHTML = '';
+  actionButtons.style.display = 'none';
+  
+  try {
+    // Call our serverless function instead of direct API
+    const response = await fetch('/api/generate-greeting', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        relationship,
+        customDetails,
+        selectedStyle
+      })
+    });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || `API error ${response.status}`);
-        }
+    const data = await response.json();
 
-        const data = await response.json();
-
-        // Extract the generated greeting
-        const greeting = data.greeting || "May the divine light of Diwali bring peace, prosperity, and happiness to you and your family. Wishing you a joyous festival and a wonderful year ahead!";
-        
-        // Display the greeting
-        output.innerHTML = `<div class="greeting-text">${greeting}</div>`;
-        output.classList.add('filled');
-        
-        // Show action buttons
-        actionButtons.style.display = 'flex';
-        
-        // Add to history
-        addToHistory(name, relationship, selectedStyle, greeting);
-        
-        // Trigger celebration effects
-        triggerCelebration();
-        
-      } catch (error) {
-        console.error('Error:', error);
-        // Fallback greeting in case of API error
-        const fallbackGreetings = [
-          `Wishing ${name} and your loved ones a Diwali filled with joy, prosperity, and the warmth of family and friends. May the divine light of Diwali bring peace and happiness to your life.`,
-          `May the beautiful festival of Diwali fill ${name}'s home and heart with countless blessings, joy, and prosperity. Wishing you a sparkling and safe celebration!`,
-          `As you celebrate the festival of lights, ${name}, may your life be filled with new hopes, opportunities, and success. Happy Diwali to you and your family!`
-        ];
-        
-        const randomGreeting = fallbackGreetings[Math.floor(Math.random() * fallbackGreetings.length)];
-        output.innerHTML = `<div class="greeting-text">${randomGreeting}</div>`;
-        output.classList.add('filled');
-        actionButtons.style.display = 'flex';
-        
-        addToHistory(name, relationship, selectedStyle, randomGreeting);
-      } finally {
-        spinner.style.display = 'none';
-      }
+    // Check if the response indicates success
+    let greeting;
+    if (data.success && data.greeting) {
+      greeting = data.greeting;
+    } else {
+      // Use fallback if API failed
+      greeting = data.greeting || getFallbackGreeting(name);
+      console.log('Using fallback greeting:', data.note);
     }
+    
+    // Display the greeting
+    output.innerHTML = `<div class="greeting-text">${greeting}</div>`;
+    output.classList.add('filled');
+    
+    // Show action buttons
+    actionButtons.style.display = 'flex';
+    
+    // Add to history
+    addToHistory(name, relationship, selectedStyle, greeting);
+    
+    // Trigger celebration effects
+    triggerCelebration();
+    
+  } catch (error) {
+    console.error('Error:', error);
+    const fallbackGreeting = getFallbackGreeting(name);
+    output.innerHTML = `<div class="greeting-text">${fallbackGreeting}</div>`;
+    output.classList.add('filled');
+    actionButtons.style.display = 'flex';
+    
+    addToHistory(name, relationship, selectedStyle, fallbackGreeting);
+  } finally {
+    spinner.style.display = 'none';
+  }
+}
+
+function getFallbackGreeting(name) {
+  const fallbackGreetings = [
+    `Wishing ${name} and your loved ones a Diwali filled with joy, prosperity, and the warmth of family and friends. May the divine light of Diwali bring peace and happiness to your life.`,
+    `May the beautiful festival of Diwali fill ${name}'s home and heart with countless blessings, joy, and prosperity. Wishing you a sparkling and safe celebration!`,
+    `As you celebrate the festival of lights, ${name}, may your life be filled with new hopes, opportunities, and success. Happy Diwali to you and your family!`
+  ];
+  
+  return fallbackGreetings[Math.floor(Math.random() * fallbackGreetings.length)];
+}
     
     function addToHistory(name, relationship, style, greeting) {
       const historyItem = {
