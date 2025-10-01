@@ -507,74 +507,81 @@
       createFireworks();
     });
     
-    async function generateGreeting() {
-      const name = document.getElementById('name').value.trim();
-      const relationship = document.getElementById('relationship').value;
-      const customDetails = document.getElementById('custom-details').value.trim();
-      const selectedStyle = document.querySelector('.option-card.selected').dataset.style;
-      
-      const output = document.getElementById('output');
-      const spinner = document.getElementById('spinner');
-      const actionButtons = document.getElementById('action-buttons');
-      
-      if (!name) {
-        output.innerHTML = '<p style="color: #ffeb3b;">Please enter a name for the recipient!</p>';
-        return;
-      }
-      
-      spinner.style.display = 'block';
-      output.innerHTML = '';
-      actionButtons.style.display = 'none';
-      
-      try {
-        // Create a more detailed prompt for the AI
-        const prompt = `Generate a warm, festive Diwali greeting in ${selectedStyle} style for ${name}, who is my ${relationship}. ${customDetails ? `Additional context: ${customDetails}` : ''}. The greeting should be between 2-4 sentences, cheerful, and appropriate for the Diwali festival.`;
-        
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [
-              {
-                role: "user",
-                parts: [{ text: prompt }]
-              }
-            ]
-          })
-        });
+   async function generateGreeting() {
+  const name = document.getElementById('name').value.trim();
+  const relationship = document.getElementById('relationship').value;
+  const customDetails = document.getElementById('custom-details').value.trim();
+  const selectedStyle = document.querySelector('.option-card.selected').dataset.style;
+  
+  const output = document.getElementById('output');
+  const spinner = document.getElementById('spinner');
+  const actionButtons = document.getElementById('action-buttons');
+  
+  if (!name) {
+    output.innerHTML = '<p style="color: #ffeb3b;">Please enter a name for the recipient!</p>';
+    return;
+  }
+  
+  spinner.style.display = 'block';
+  output.innerHTML = '';
+  actionButtons.style.display = 'none';
+  
+  try {
+    const response = await fetch('/api/generate-greeting', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        relationship,
+        customDetails,
+        selectedStyle
+      })
+    });
 
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(`API error ${response.status}: ${errText}`);
-        }
+    if (!response.ok) {
+      throw new Error('Failed to generate greeting');
+    }
 
-        const data = await response.json();
+    const data = await response.json();
+    const greeting = data.greeting || getFallbackGreeting(name);
+    
+    // Display the greeting
+    output.innerHTML = `<div class="greeting-text">${greeting}</div>`;
+    output.classList.add('filled');
+    
+    // Show action buttons
+    actionButtons.style.display = 'flex';
+    
+    // Add to history
+    addToHistory(name, relationship, selectedStyle, greeting);
+    
+    // Trigger celebration effects
+    triggerCelebration();
+    
+  } catch (error) {
+    console.error('Error:', error);
+    const fallbackGreeting = getFallbackGreeting(name);
+    output.innerHTML = `<div class="greeting-text">${fallbackGreeting}</div>`;
+    output.classList.add('filled');
+    actionButtons.style.display = 'flex';
+    
+    addToHistory(name, relationship, selectedStyle, fallbackGreeting);
+  } finally {
+    spinner.style.display = 'none';
+  }
+}
 
-        // Extract the generated greeting
-        const greeting = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
-          || "May the divine light of Diwali bring peace, prosperity, and happiness to you and your family. Wishing you a joyous festival and a wonderful year ahead!";
-        
-        // Display the greeting
-        output.innerHTML = `<div class="greeting-text">${greeting}</div>`;
-        output.classList.add('filled');
-        
-        // Show action buttons
-        actionButtons.style.display = 'flex';
-        
-        // Add to history
-        addToHistory(name, relationship, selectedStyle, greeting);
-        
-        // Trigger celebration effects
-        triggerCelebration();
-        
-      } catch (error) {
-        console.error('Error:', error);
-        // Fallback greeting in case of API error
-        const fallbackGreetings = [
-          `Wishing ${name} and your loved ones a Diwali filled with joy, prosperity, and the warmth of family and friends. May the divine light of Diwali bring peace and happiness to your life.`,
-          `May the beautiful festival of Diwali fill ${name}'s home and heart with countless blessings, joy, and prosperity. Wishing you a sparkling and safe celebration!`,
-          `As you celebrate the festival of lights, ${name}, may your life be filled with new hopes, opportunities, and success. Happy Diwali to you and your family!`
-        ];
+function getFallbackGreeting(name) {
+  const fallbackGreetings = [
+    `Wishing ${name} and your loved ones a Diwali filled with joy, prosperity, and the warmth of family and friends. May the divine light of Diwali bring peace and happiness to your life.`,
+    `May the beautiful festival of Diwali fill ${name}'s home and heart with countless blessings, joy, and prosperity. Wishing you a sparkling and safe celebration!`,
+    `As you celebrate the festival of lights, ${name}, may your life be filled with new hopes, opportunities, and success. Happy Diwali to you and your family!`
+  ];
+  
+  return fallbackGreetings[Math.floor(Math.random() * fallbackGreetings.length)];
+}
         
         const randomGreeting = fallbackGreetings[Math.floor(Math.random() * fallbackGreetings.length)];
         output.innerHTML = `<div class="greeting-text">${randomGreeting}</div>`;
