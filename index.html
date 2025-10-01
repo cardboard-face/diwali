@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diwali Greeting Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #ff9800;
+      --secondary: #e91e63;
+      --accent: #ffeb3b;
+      --dark: #8e24aa;
+      --light: #fff3cd;
+      --success: #4caf50;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #ff9800, #e91e63, #8e24aa);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      margin-top: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(to right, #ffeb3b, #ff9800, #e91e63);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+    }
+    
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(to right, #ffeb3b, #ff9800, #e91e63);
+      border-radius: 2px;
+    }
+    
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+    
+    .diwali-decoration {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .diya {
+      width: 40px;
+      height: 40px;
+      background: radial-gradient(circle at 30% 30%, #ff9800, #ff5722);
+      border-radius: 50% 50% 40% 40%;
+      position: relative;
+      box-shadow: 0 0 20px #ff9800;
+      animation: flicker 3s infinite alternate;
+    }
+    
+    .diya::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 20px;
+      background: #ffeb3b;
+      border-radius: 50% 50% 20% 20%;
+      box-shadow: 0 0 15px #ffeb3b;
+    }
+    
+    @keyframes flicker {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .card-title {
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .card-title i {
+      color: var(--accent);
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 1rem;
+      color: #333;
+      transition: all 0.3s ease;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.5);
+      background: rgba(255, 255, 255, 1);
+    }
+    
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .option-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+    
+    .option-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .option-card.selected {
+      border-color: var(--accent);
+      background: rgba(255, 235, 59, 0.2);
+    }
+    
+    .option-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    
+    .btn {
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .btn:active {
+      transform: translateY(1px);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      margin-top: 10px;
+    }
+    
+    #output {
+      margin-top: 30px;
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      white-space: pre-wrap;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    #output.filled {
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .greeting-text {
+      font-size: 1.3rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .action-btn {
+      padding: 10px 20px;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    
+    .spinner {
+      text-align: center;
+      padding: 20px;
+      display: none;
+    }
+    
+    .spinner i {
+      font-size: 2rem;
+      color: var(--accent);
+      animation: spin 1.5s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .firework {
+      position: fixed;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 100;
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+    
+    .history-section {
+      margin-top: 30px;
+    }
+    
+    .history-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+    
+    .history-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .history-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .api-note {
+      background: rgba(255, 235, 59, 0.2);
+      border: 1px solid rgba(255, 235, 59, 0.5);
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .options-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="diwali-decoration">
+    <div class="diya"></div>
+    <div class="diya"></div>
+    <div class="diya"></div>
+    <div class="diya"></div>
+    <div class="diya"></div>
+  </div>
+  
+  <header>
+    <h1>✨ Diwali Greeting Generator ✨</h1>
+    <p class="subtitle">Create beautiful, personalized Diwali wishes in seconds!</p>
+  </header>
+  
+  <div class="container">
+    <div class="api-note">
+      <i class="fas fa-info-circle"></i>
+      <strong>No API Key Needed!</strong> This app works out of the box with built-in fallback greetings.
+      For enhanced AI-generated greetings, the developer can add a Gemini API key in Vercel environment variables.
+    </div>
+    
+    <div class="card">
+      <h2 class="card-title"><i class="fas fa-user-edit"></i> Personalize Your Greeting</h2>
+      
+      <div class="input-group">
+        <label for="name">Recipient's Name</label>
+        <input type="text" id="name" placeholder="Enter name (e.g., Jay, Priya, Family)">
+      </div>
+      
+      <div class="input-group">
+        <label for="relationship">Relationship</label>
+        <select id="relationship">
+          <option value="friend">Friend</option>
+          <option value="family">Family</option>
+          <option value="colleague">Colleague</option>
+          <option value="business">Business Partner</option>
+          <option value="relative">Relative</option>
+        </select>
+      </div>
+      
+      <div class="input-group">
+        <label for="custom-details">Additional Details (Optional)</label>
+        <textarea id="custom-details" rows="3" placeholder="e.g., enjoying the festival lights, celebrating with family, etc."></textarea>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2 class="card-title"><i class="fas fa-palette"></i> Choose Greeting Style</h2>
+      
+      <div class="options-grid">
+        <div class="option-card selected" data-style="traditional">
+          <div class="option-icon"><i class="fas fa-praying-hands"></i></div>
+          <div>Traditional</div>
+        </div>
+        
+        <div class="option-card" data-style="modern">
+          <div class="option-icon"><i class="fas fa-bolt"></i></div>
+          <div>Modern</div>
+        </div>
+        
+        <div class="option-card" data-style="funny">
+          <div class="option-icon"><i class="fas fa-laugh"></i></div>
+          <div>Humorous</div>
+        </div>
+        
+        <div class="option-card" data-style="poetic">
+          <div class="option-icon"><i class="fas fa-feather-alt"></i></div>
+          <div>Poetic</div>
+        </div>
+        
+        <div class="option-card" data-style="spiritual">
+          <div class="option-icon"><i class="fas fa-om"></i></div>
+          <div>Spiritual</div>
+        </div>
+      </div>
+    </div>
+    
+    <button class="btn" onclick="generateGreeting()">
+      <i class="fas fa-magic"></i> Generate Diwali Greeting
+    </button>
+    
+    <div class="spinner" id="spinner">
+      <i class="fas fa-spinner"></i>
+      <p>Creating your special Diwali wish...</p>
+    </div>
+    
+    <div id="output">
+      <i class="fas fa-gift" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.7;"></i>
+      <p>Your personalized Diwali greeting will appear here</p>
+    </div>
+    
+    <div class="action-buttons" id="action-buttons" style="display: none;">
+      <button class="action-btn" onclick="copyToClipboard()">
+        <i class="fas fa-copy"></i> Copy Text
+      </button>
+      <button class="action-btn" onclick="shareGreeting()">
+        <i class="fas fa-share-alt"></i> Share
+      </button>
+      <button class="action-btn" onclick="saveGreeting()">
+        <i class="fas fa-download"></i> Save as Image
+      </button>
+      <button class="action-btn" onclick="generateNew()">
+        <i class="fas fa-redo"></i> Generate New
+      </button>
+    </div>
+    
+    <div class="history-section">
+      <h2 class="card-title"><i class="fas fa-history"></i> Greeting History</h2>
+      <div class="history-list" id="history-list">
+        <!-- History items will be added here -->
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>Wishing you a joyful and prosperous Diwali! 🪔</p>
+    <p>Made with ❤️ for the Festival of Lights | Deployed on Vercel</p>
+  </footer>
+
+  <script>
+    // Greeting history
+    let greetingHistory = [];
+    
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load greeting history from localStorage
+      const savedHistory = localStorage.getItem('diwaliGreetingHistory');
+      if (savedHistory) {
+        greetingHistory = JSON.parse(savedHistory);
+        updateHistoryList();
+      }
+      
+      // Set up style selection
+      const styleCards = document.querySelectorAll('.option-card');
+      styleCards.forEach(card => {
+        card.addEventListener('click', function() {
+          styleCards.forEach(c => c.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+      
+      // Add fireworks animation
+      createFireworks();
+      
+      // Allow Enter key to generate greeting
+      document.getElementById('name').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') generateGreeting();
+      });
+    });
+    
+    async function generateGreeting() {
+      const name = document.getElementById('name').value.trim();
+      const relationship = document.getElementById('relationship').value;
+      const customDetails = document.getElementById('custom-details').value.trim();
+      const selectedStyle = document.querySelector('.option-card.selected').dataset.style;
+      
+      const output = document.getElementById('output');
+      const spinner = document.getElementById('spinner');
+      const actionButtons = document.getElementById('action-buttons');
+      
+      if (!name) {
+        output.innerHTML = '<p style="color: #ffeb3b;">Please enter a name for the recipient!</p>';
+        return;
+      }
+      
+      spinner.style.display = 'block';
+      output.innerHTML = '';
+      actionButtons.style.display = 'none';
+      
+      try {
+        const response = await fetch('/api/generate-greeting', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name,
+            relationship,
+            customDetails,
+            style: selectedStyle
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          let greetingHTML = `<div class="greeting-text">${data.greeting}</div>`;
+          if (data.note) {
+            greetingHTML += `<p style="font-size: 0.9rem; opacity: 0.7; margin-top: 10px;"><i class="fas fa-info-circle"></i> ${data.note}</p>`;
+          }
+          output.innerHTML = greetingHTML;
+          output.classList.add('filled');
+          actionButtons.style.display = 'flex';
+          addToHistory(name, relationship, selectedStyle, data.greeting);
+          triggerCelebration();
+        } else {
+          throw new Error(data.error);
+        }
+        
+      } catch (error) {
+        console.error('Error:', error);
+        // Use fallback greetings
+        const fallbackGreetings = [
+          `Wishing ${name} and your loved ones a Diwali filled with joy, prosperity, and the warmth of family and friends. May the divine light of Diwali bring peace and happiness to your life.`,
+          `May the beautiful festival of Diwali fill ${name}'s home and heart with countless blessings, joy, and prosperity. Wishing you a sparkling and safe celebration!`,
+          `As you celebrate the festival of lights, ${name}, may your life be filled with new hopes, opportunities, and success. Happy Diwali to you and your family!`
+        ];
+        const randomGreeting = fallbackGreetings[Math.floor(Math.random() * fallbackGreetings.length)];
+        output.innerHTML = `<div class="greeting-text">${randomGreeting}</div>`;
+        output.classList.add('filled');
+        actionButtons.style.display = 'flex';
+        addToHistory(name, relationship, selectedStyle, randomGreeting);
+      } finally {
+        spinner.style.display = 'none';
+      }
+    }
+    
+    function addToHistory(name, relationship, style, greeting) {
+      const historyItem = {
+        id: Date.now(),
+        name,
+        relationship,
+        style,
+        greeting,
+        timestamp: new Date().toLocaleString()
+      };
+      
+      greetingHistory.unshift(historyItem);
+      
+      // Keep only last 10 items
+      if (greetingHistory.length > 10) {
+        greetingHistory = greetingHistory.slice(0, 10);
+      }
+      
+      // Save to localStorage
+      localStorage.setItem('diwaliGreetingHistory', JSON.stringify(greetingHistory));
+      
+      // Update the history list
+      updateHistoryList();
+    }
+    
+    function updateHistoryList() {
+      const historyList = document.getElementById('history-list');
+      historyList.innerHTML = '';
+      
+      if (greetingHistory.length === 0) {
+        historyList.innerHTML = '<p style="text-align: center; opacity: 0.7;">No greeting history yet</p>';
+        return;
+      }
+      
+      greetingHistory.forEach(item => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.innerHTML = `
+          <div style="font-weight: bold;">To: ${item.name} (${item.relationship})</div>
+          <div style="font-size: 0.9rem; opacity: 0.8;">${item.timestamp}</div>
+        `;
+        
+        historyItem.addEventListener('click', function() {
+          document.getElementById('output').innerHTML = `<div class="greeting-text">${item.greeting}</div>`;
+          document.getElementById('output').classList.add('filled');
+          document.getElementById('action-buttons').style.display = 'flex';
+        });
+        
+        historyList.appendChild(historyItem);
+      });
+    }
+    
+    function copyToClipboard() {
+      const greetingText = document.querySelector('.greeting-text').innerText;
+      navigator.clipboard.writeText(greetingText).then(() => {
+        alert('Greeting copied to clipboard!');
+      });
+    }
+    
+    function shareGreeting() {
+      const greetingText = document.querySelector('.greeting-text').innerText;
+      
+      if (navigator.share) {
+        navigator.share({
+          title: 'Diwali Greeting',
+          text: greetingText,
+        })
+        .catch(error => console.log('Error sharing:', error));
+      } else {
+        // Fallback for browsers that don't support Web Share API
+        copyToClipboard();
+        alert('Greeting copied to clipboard! You can now paste it to share.');
+      }
+    }
+    
+    function saveGreeting() {
+      alert('Image download feature would be implemented with a proper library in a production app.');
+      // In a real app, you would use html2canvas or similar to capture the greeting as an image
+    }
+    
+    function generateNew() {
+      document.getElementById('output').innerHTML = `
+        <i class="fas fa-gift" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.7;"></i>
+        <p>Your personalized Diwali greeting will appear here</p>
+      `;
+      document.getElementById('output').classList.remove('filled');
+      document.getElementById('action-buttons').style.display = 'none';
+    }
+    
+    function createFireworks() {
+      // Create some initial decorative fireworks
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          createFirework(
+            Math.random() * window.innerWidth,
+            Math.random() * window.innerHeight / 2
+          );
+        }, i * 500);
+      }
+    }
+    
+    function triggerCelebration() {
+      // Create multiple fireworks
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => {
+          createFirework(
+            Math.random() * window.innerWidth,
+            Math.random() * window.innerHeight / 2
+          );
+        }, i * 200);
+      }
+      
+      // Create confetti
+      createConfetti();
+    }
+    
+    function createFirework(x, y) {
+      const firework = document.createElement('div');
+      firework.className = 'firework';
+      firework.style.left = `${x}px`;
+      firework.style.top = `${y}px`;
+      document.body.appendChild(firework);
+      
+      // Animate the firework
+      const colors = ['#ffeb3b', '#ff9800', '#e91e63', '#8e24aa'];
+      const particles = 12;
+      
+      for (let i = 0; i < particles; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'firework';
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        document.body.appendChild(particle);
+        
+        const angle = (i / particles) * Math.PI * 2;
+        const speed = 2 + Math.random() * 2;
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed;
+        
+        let posX = x;
+        let posY = y;
+        let opacity = 1;
+        
+        const animate = () => {
+          posX += vx;
+          posY += vy;
+          opacity -= 0.02;
+          
+          particle.style.left = `${posX}px`;
+          particle.style.top = `${posY}px`;
+          particle.style.opacity = opacity;
+          
+          if (opacity > 0) {
+            requestAnimationFrame(animate);
+          } else {
+            document.body.removeChild(particle);
+          }
+        };
+        
+        animate();
+      }
+      
+      // Remove the initial firework
+      setTimeout(() => {
+        document.body.removeChild(firework);
+      }, 500);
+    }
+    
+    function createConfetti() {
+      const confettiCount = 50;
+      const colors = ['#ffeb3b', '#ff9800', '#e91e63', '#8e24aa', '#4caf50'];
+      
+      for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = `${Math.random() * 100}vw`;
+        confetti.style.top = '-10px';
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.body.appendChild(confetti);
+        
+        // Animate confetti falling
+        const duration = 1 + Math.random() * 2;
+        const delay = Math.random() * 2;
+        
+        confetti.style.animation = `
+          confetti-fall ${duration}s ease-in ${delay}s forwards
+        `;
+        
+        // Remove confetti after animation
+        setTimeout(() => {
+          if (confetti.parentNode) {
+            document.body.removeChild(confetti);
+          }
+        }, (duration + delay) * 1000);
+      }
+      
+      // Add confetti animation to style
+      if (!document.querySelector('#confetti-style')) {
+        const style = document.createElement('style');
+        style.id = 'confetti-style';
+        style.textContent = `
+          @keyframes confetti-fall {
+            0% {
+              opacity: 1;
+              transform: translateY(0) rotate(0deg);
+            }
+            100% {
+              opacity: 0;
+              transform: translateY(100vh) rotate(720deg);
+            }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    }
+  </script>
+</body>
+</html>
